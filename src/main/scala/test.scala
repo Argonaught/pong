@@ -46,17 +46,17 @@ object ScalaFXHelloWorld extends JFXApp {
 
 
       val backGround = new HBox {
-        padding = Insets(150, 80, 50, 40)
+        padding = Insets(150, 80, 50, 120)
         children = Seq(
           new Text {
-            text = "Clone"
+            text = "Pong"
             style = "-fx-font: normal bold 100pt sans-serif"
             fill = new LinearGradient(
               endX = 0,
               stops = Stops(Red, DarkRed))
           },
           new Text {
-            text = "Pong"
+            text = "FX"
             style = "-fx-font: italic bold 100pt sans-serif"
             fill = new LinearGradient(
               endX = 0,
