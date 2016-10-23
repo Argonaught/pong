@@ -49,7 +49,7 @@ object ScalaFXHelloWorld extends JFXApp {
         padding = Insets(150, 80, 50, 40)
         children = Seq(
           new Text {
-            text = "Super"
+            text = "Clone"
             style = "-fx-font: normal bold 100pt sans-serif"
             fill = new LinearGradient(
               endX = 0,
@@ -256,7 +256,7 @@ object ScalaFXHelloWorld extends JFXApp {
           }
 
 
-          
+
           ball.centerX = ball.centerX() + (ballSpeed * ballDeltaX)
           ball.centerY = ball.centerY() + (ballSpeed * ballDeltaY)
         }
