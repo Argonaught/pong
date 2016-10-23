@@ -19,6 +19,7 @@ object ScalaFXHelloWorld extends JFXApp {
   val SCREEN_HEIGHT = 600
 
   val PADDLE_SPEED: Double = 100.0
+  val INITIAL_BALL_SPEED = 1000.0
 
   val PADDLE_SIZE = 200
 
@@ -166,7 +167,7 @@ object ScalaFXHelloWorld extends JFXApp {
       ball.centerY = SCREEN_HEIGHT / 2
       paddle1.y = SCREEN_HEIGHT / 2
       paddle2.y = SCREEN_HEIGHT / 2
-      var ballSpeed: Double = 10.0
+      var ballSpeed = INITIAL_BALL_SPEED
       var finished = false
 
       content = List(continueText, redScoreDisplay, blueScoreDisplay, redWins, blueWins, backGround, ball, paddle1, paddle2)
@@ -198,43 +199,58 @@ object ScalaFXHelloWorld extends JFXApp {
           ball.centerY = SCREEN_HEIGHT / 2
           paddle1.y = SCREEN_HEIGHT / 2
           paddle2.y = SCREEN_HEIGHT / 2
-          ballSpeed = 10.0
+          ballSpeed = INITIAL_BALL_SPEED
         }
       }
 
       val ballTimer = AnimationTimer(t => {
 
-
+        // slightly changes the balls direction
+        def wiggle: Unit = {
+          val rand = new Random(1)
+          var wiggle = rand.nextDouble() / 10
+          if (redScore > blueScore) {
+            ballDeltaX += wiggle
+            ballDeltaY -= wiggle
+          } else if (blueScore > redScore) {
+            ballDeltaX -= wiggle
+            ballDeltaY += wiggle
+          }
+        }
         if (lastTime > 0) {
           val timeDelta: Double = (t - lastTime) / 1e9
 
           ballSpeed *= 1.001
 
 
-          if (ball.getBoundsInParent.intersects(paddle1.boundsInParent()) || ball.getBoundsInParent.intersects(paddle2.boundsInParent())) {
-            ballDeltaX = -ballDeltaX
-            val rand = new Random(1)
-            var wiggle = rand.nextDouble() / 10
-            if (redScore > blueScore) {
-              ballDeltaX += wiggle
-              ballDeltaY -= wiggle
-            } else if (blueScore > redScore) {
-              ballDeltaX -= wiggle
-              ballDeltaY += wiggle
-            }
+          if (ball.getBoundsInParent.intersects(paddle1.boundsInParent())) {
+            ballDeltaX = Math.abs(ballDeltaX)
+            wiggle
 
           }
 
-          if (ball.getCenterY < (0 + ball.getRadius) || ball.getCenterY > (SCREEN_HEIGHT - ball.getRadius)) {
-            ballDeltaY = -ballDeltaY
-            val rand = new Random(1)
-            var wiggle = rand.nextDouble() / 10
-            ballDeltaX += wiggle
-            ballDeltaY -= wiggle
+          if (ball.getBoundsInParent.intersects(paddle2.boundsInParent())) {
+            ballDeltaX = -Math.abs(ballDeltaX)
+            wiggle
 
           }
 
-          if (ball.getCenterX < 0 && !finished) {
+          if ( ball.getCenterY < (0 + ball.getRadius) ) {
+            ballDeltaY = Math.abs(ballDeltaY)
+          } else if (ball.getCenterY > (SCREEN_HEIGHT - ball.getRadius)) {
+            ballDeltaY = -Math.abs(ballDeltaY)
+          }
+
+
+
+
+
+          ball.centerX = ball.centerX() + (ballSpeed * ballDeltaX * timeDelta)
+          ball.centerY = ball.centerY() + (ballSpeed * ballDeltaY * timeDelta)
+
+
+          // check for red win
+          if (ball.getCenterX < 0 - ball.getRadius && !finished) {
             backGround.visible = false
             redWins.visible = true
             blueWins.visible = false
@@ -245,7 +261,8 @@ object ScalaFXHelloWorld extends JFXApp {
             finished = true
           }
 
-          if (ball.getCenterX > SCREEN_WIDTH && !finished) {
+          // check for blue win
+          else if (ball.getCenterX > SCREEN_WIDTH + ball.getRadius && !finished) {
             backGround.visible = false
             redWins.visible = false
             blueWins.visible = true
@@ -254,11 +271,6 @@ object ScalaFXHelloWorld extends JFXApp {
             blueScoreDisplay.text = blueScore.toString
             finished = true
           }
-
-
-
-          ball.centerX = ball.centerX() + (ballSpeed * ballDeltaX)
-          ball.centerY = ball.centerY() + (ballSpeed * ballDeltaY)
         }
         lastTime = t
       })
