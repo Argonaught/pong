@@ -19,7 +19,8 @@ object ScalaFXHelloWorld extends JFXApp {
   val SCREEN_HEIGHT = 600
 
   val PADDLE_SPEED: Double = 100.0
-  var BALL_SPEED: Double = 10.0
+
+  val PADDLE_SIZE = 200
 
   val END_SCREEN_TIME = 10000
 
@@ -32,11 +33,11 @@ object ScalaFXHelloWorld extends JFXApp {
       val ball = Circle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 20)
       ball.fill = Color.Yellow
 
-      val paddle1 = Rectangle(0, SCREEN_HEIGHT / 2, 10, 100)
+      val paddle1 = Rectangle(0, SCREEN_HEIGHT / 2, 10, PADDLE_SIZE)
       paddle1.fill = Color.Blue
 
 
-      val paddle2 = Rectangle(SCREEN_WIDTH - 10, SCREEN_HEIGHT / 2, 10, 100)
+      val paddle2 = Rectangle(SCREEN_WIDTH - 10, SCREEN_HEIGHT / 2, 10, PADDLE_SIZE)
       paddle2.fill = Color.Red
 
       // per game variables
@@ -174,28 +175,32 @@ object ScalaFXHelloWorld extends JFXApp {
 
       onKeyReleased = (e: KeyEvent) => {
         if (e.code == KeyCode.Up && paddle2.y() > 0) paddle2.y = paddle2.y() - PADDLE_SPEED
-        else if (e.code == KeyCode.Down && paddle2.y() < SCREEN_HEIGHT - 100) paddle2.y = paddle2.y() + PADDLE_SPEED
+        else if (e.code == KeyCode.Down && paddle2.y() < SCREEN_HEIGHT - PADDLE_SIZE) paddle2.y = paddle2.y() + PADDLE_SPEED
         else if (e.code == KeyCode.W && paddle1.y() > 0) paddle1.y = paddle1.y() - PADDLE_SPEED
-        else if (e.code == KeyCode.S && paddle1.y() < SCREEN_HEIGHT - 100) paddle1.y = paddle1.y() + PADDLE_SPEED
+        else if (e.code == KeyCode.S && paddle1.y() < SCREEN_HEIGHT - PADDLE_SIZE) paddle1.y = paddle1.y() + PADDLE_SPEED
         else if (e.code == KeyCode.Space) {
-          if (finished) {
-            finished = false
-            blueWins.visible = false
-            redWins.visible = false
-            continueText.visible = false
-            backGround.visible = true
-            lastTime = 0L
-            ballDeltaX = 0.8
-            ballDeltaY = 0.2
-            ball.centerX = SCREEN_WIDTH / 2
-            ball.centerY = SCREEN_HEIGHT / 2
-            paddle1.y = SCREEN_HEIGHT / 2
-            paddle2.y = SCREEN_HEIGHT / 2
-            ballSpeed = 10.0
-          }
+          restart
         }
       }
 
+
+      private def restart: Unit = {
+        if (finished) {
+          finished = false
+          blueWins.visible = false
+          redWins.visible = false
+          continueText.visible = false
+          backGround.visible = true
+          lastTime = 0L
+          ballDeltaX = 0.8
+          ballDeltaY = 0.2
+          ball.centerX = SCREEN_WIDTH / 2
+          ball.centerY = SCREEN_HEIGHT / 2
+          paddle1.y = SCREEN_HEIGHT / 2
+          paddle2.y = SCREEN_HEIGHT / 2
+          ballSpeed = 10.0
+        }
+      }
 
       val ballTimer = AnimationTimer(t => {
 
@@ -251,7 +256,7 @@ object ScalaFXHelloWorld extends JFXApp {
           }
 
 
-
+          
           ball.centerX = ball.centerX() + (ballSpeed * ballDeltaX)
           ball.centerY = ball.centerY() + (ballSpeed * ballDeltaY)
         }
